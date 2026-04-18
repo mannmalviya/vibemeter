@@ -1,0 +1,19 @@
+{
+  "name": "@vibemeter/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared types, event log, ownership map, and project registry",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "node ../../build.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "diff": "^5.2.0",
+    "glob": "^11.0.0"
+  },
+  "devDependencies": {
+    "typescript": "*"
+  }
+}

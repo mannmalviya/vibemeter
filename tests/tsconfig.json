@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // Tests don't emit files — vitest runs TypeScript directly via esbuild
+    "noEmit": true,
+    "rootDir": "."
+  },
+  "include": ["./**/*"]
+}

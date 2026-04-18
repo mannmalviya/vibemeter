@@ -1,0 +1,15 @@
+{
+  // Base TypeScript config shared by all packages in the monorepo.
+  // Each package extends this and adds its own outDir.
+  "compilerOptions": {
+    "target": "ES2020",           // Modern JS features (async/await, optional chaining, etc.)
+    "module": "CommonJS",         // Node.js-compatible module format
+    "moduleResolution": "node",   // Resolve imports the Node.js way
+    "strict": true,               // Catch more bugs at compile time (highly recommended)
+    "esModuleInterop": true,      // Allows `import x from 'x'` instead of `import * as x from 'x'`
+    "skipLibCheck": true,         // Don't type-check .d.ts files in node_modules (faster builds)
+    "declaration": true,          // Generate .d.ts type files so other packages can use this one
+    "declarationMap": true,       // Generate source maps for .d.ts files (better IDE navigation)
+    "sourceMap": true             // Generate .js.map files (better error stack traces)
+  }
+}

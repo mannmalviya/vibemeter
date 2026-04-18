@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    // VS Code extensions use CommonJS and run in the extension host (Node.js environment)
+    "lib": ["ES2020"]
+  },
+  "include": ["src/**/*"]
+}

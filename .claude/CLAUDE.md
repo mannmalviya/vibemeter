@@ -35,8 +35,13 @@ All data lives locally at `~/.VibeMeter/` — never synced to a cloud.
 ```
 ~/.VibeMeter/
 ├── projects.json          # registry: { "project-id": { path, name, initAt } }
-└── events/
-    └── <project-id>.jsonl # one event per line
+├── projects/
+│   └── <project-id>/
+│       ├── events.jsonl   # one event per line, append-only
+│       └── ownership.json # line ownership map: { "src/foo.ts": ["claude", "human", ...] }
+└── tmp/
+    ├── <session>-<filehash>.txt  # pre-Write snapshot
+    └── <filehash>.expected       # expected post-Claude file hash
 ```
 
 **Attribution sources:**
@@ -63,6 +68,7 @@ All data lives locally at `~/.VibeMeter/` — never synced to a cloud.
 ## General Rules
 - Use kebab case for naming files
 - I am new to coding — write lots of comments to help me understand the code.
+- Follow Test Driver Development -- Write tests first and then implementation to pass those tests
 
 ## Coding Rules
 
@@ -70,7 +76,7 @@ All data lives locally at `~/.VibeMeter/` — never synced to a cloud.
 - No native binary dependencies
 - Stats are always computed at read time from the `.jsonl` log, never cached
 - Attribution is content-based, not timing-based (use SHA-256 hashes to match Claude vs human edits)
-- Tests live in `packages/tests/` organized by unit / integration / e2e / stress
+- Tests live in `tests/` organized by unit / integration / e2e / stress
 
 ## Design Rules
 - We want a clean simple design

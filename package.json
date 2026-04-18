@@ -1,13 +1,20 @@
 {
-  "name": "ClawdCodeSplit",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "vibemeter",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Track what percentage of your codebase was written by Claude Code vs you",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node build.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^2.1.0",
+    "esbuild": "^0.24.0",
+    "tmp": "^0.2.3",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  },
   "packageManager": "pnpm@10.20.0"
 }

@@ -31,9 +31,14 @@ VibeMeter/
 
 ```
 ~/.VibeMeter/
-├── projects.json          # registry: { "project-id": { path, name, initAt } }
-└── events/
-    └── <project-id>.jsonl # one event per line
+├── projects.json              # registry: { "project-id": { path, name, initAt } }
+├── projects/
+│   └── <project-id>/
+│       ├── events.jsonl       # one event per line, append-only
+│       └── ownership.json     # line ownership map: { "src/foo.ts": ["claude", "human", ...] }
+└── tmp/
+    ├── <session>-<filehash>.txt   # pre-Write snapshot (used by post-hook)
+    └── <filehash>.expected        # expected post-Claude file hash (used by VS Code tracker)
 ```
 
 **Event shape:**
@@ -90,7 +95,7 @@ Because the map is **per file**, a human editing `src/bar.ts` while Claude is si
 
 ### Deletion accounting
 
-When lines are deleted, the event records `removed > 0`. To know *whose* lines were deleted, the extension maintains a **line ownership map** per file (`~/.VibeMeter/ownership/<project-id>/<filehash>.json`) — a flat array where each entry is the source (`"claude"` or `"human"`) that wrote that line.
+When lines are deleted, the event records `removed > 0`. To know *whose* lines were deleted, the extension maintains a **line ownership map** (`~/.VibeMeter/projects/<project-id>/ownership.json`) — a JSON object keyed by file path, where each value is a flat array of sources (`"claude"`, `"human"`, `"starter"`) representing who wrote each line.
 
 - When Claude adds lines → ownership map updated with `"claude"` for those line indices.
 - When a human adds lines → ownership map updated with `"human"`.
@@ -186,7 +191,7 @@ Commands (via `commander`):
 **Vitest** — TypeScript-native, fast, works across all packages in the monorepo.
 
 ```
-packages/tests/
+tests/
 ├── unit/
 │   ├── core/           # log.ts, ownership.ts, projects.ts, detect-root.ts
 │   └── hooks/          # diff logic in post-hook.ts
@@ -204,7 +209,7 @@ packages/tests/
 
 ---
 
-### Unit Tests (`packages/tests/unit/`)
+### Unit Tests (`tests/unit/`)
 
 **`core/log.test.ts`**
 - `appendEvent()` writes a valid JSON line to the `.jsonl` file
@@ -233,7 +238,7 @@ packages/tests/
 
 ---
 
-### Integration Tests (`packages/tests/integration/`)
+### Integration Tests (`tests/integration/`)
 
 **`hooks/post-hook.test.ts`**
 - Pipe a mock `Edit` payload JSON to stdin of `post-hook.js` → verify a `claude` event is appended to the correct `.jsonl` file with correct line counts
@@ -248,7 +253,7 @@ packages/tests/
 
 ---
 
-### E2E Tests (`packages/tests/e2e/`)
+### E2E Tests (`tests/e2e/`)
 
 Each test creates a real temp directory, runs `VibeMeter init`, manipulates files, and asserts on `computeStats()`.
 
@@ -277,7 +282,7 @@ Each test creates a real temp directory, runs `VibeMeter init`, manipulates file
 
 ---
 
-### Stress Tests (`packages/tests/stress/`)
+### Stress Tests (`tests/stress/`)
 
 **`concurrent-same-file.test.ts`**
 - Simulate Claude hook firing for `src/foo.ts` AND a human `TextDocumentChangeEvent` on `src/foo.ts` at the same millisecond
@@ -296,7 +301,7 @@ Each test creates a real temp directory, runs `VibeMeter init`, manipulates file
 
 ---
 
-### Test Helpers (`packages/tests/fixtures/`)
+### Test Helpers (`tests/fixtures/`)
 
 - **`makePayload(type, opts)`** — constructs mock Claude hook JSON payloads for `Write`/`Edit`/`MultiEdit`
 - **`makeChangeEvent(file, insertedText, range)`** — constructs a mock VS Code `TextDocumentChangeEvent`
@@ -361,6 +366,49 @@ Each test creates a real temp directory, runs `VibeMeter init`, manipulates file
 | `react` + `recharts` | Webview dashboard charts |
 
 No native binary dependencies (no `better-sqlite3`) to keep the VS Code extension portable.
+
+---
+
+## Build Todo
+
+> Work incrementally — one item at a time, tests written before implementation (TDD).
+
+### Phase 1 — Foundation
+
+- [ ] **Monorepo scaffold** — `pnpm` workspaces, `tsconfig.base.json`, empty package stubs (`core`, `cli`, `hooks`, `vscode`), `esbuild` config
+- [ ] **`core/types.ts`** — `Source`, `Event`, `ProjectStats`, `LineOwnershipMap` type definitions (no tests needed, types only)
+
+### Phase 2 — Core Data Layer
+
+- [ ] **`core/projects.ts`** — `registerProject`, `getProjectId`, `listProjects` + unit tests
+- [ ] **`core/log.ts`** — `appendEvent`, `readEvents`, `computeStats` + unit tests
+- [ ] **`core/ownership.ts`** — `applyEdit`, `getOwnership` + unit tests
+- [ ] **`core/detect-root.ts`** — walk up to find `.git` / `package.json` + unit tests
+
+### Phase 3 — Hooks
+
+- [ ] **`hooks/pre-hook.ts`** — snapshot file before `Write` + unit tests for snapshot logic
+- [ ] **`hooks/post-hook.ts`** — diff + log for `Write | Edit | MultiEdit` + unit tests for diff logic
+- [ ] **Integration tests for hooks** — pipe mock payloads, verify `.jsonl` events written correctly
+
+### Phase 4 — CLI
+
+- [ ] **`cli/init.ts`** — detect root, register project, snapshot baseline, detect scaffold, install hooks + E2E test
+- [ ] **`cli/stats.ts`** — print attribution table + E2E test
+- [ ] **`cli/export.ts`** — JSON/CSV export + E2E test
+- [ ] **`cli/projects.ts`** — list tracked projects + E2E test
+- [ ] **`cli/serve.ts`** — local web dashboard server
+
+### Phase 5 — VS Code Extension
+
+- [ ] **`vscode/tracker.ts`** — human change tracker (content-hash matching, `onDidChangeTextDocument`) + integration tests
+- [ ] **`vscode/statusbar.ts`** — live status bar item polling `computeStats()` every 3s
+- [ ] **`vscode/webview.ts`** — sidebar dashboard panel
+
+### Phase 6 — Stress & Polish
+
+- [ ] **Stress tests** — concurrent same-file, rapid alternation, large-file (5k lines)
+- [ ] **E2E sessions** — mixed Claude + human, deletion attribution, scaffold detection
 
 ---
 

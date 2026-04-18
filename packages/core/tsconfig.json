@@ -1,0 +1,9 @@
+{
+  // Extends the shared base config at the monorepo root
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "dist",    // Compiled output goes here
+    "rootDir": "src"     // Source files live here
+  },
+  "include": ["src/**/*"]
+}

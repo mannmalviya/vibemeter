@@ -1,0 +1,21 @@
+{
+  "name": "@vibemeter/cli",
+  "version": "0.1.0",
+  "private": true,
+  "description": "VibeMeter CLI — init, stats, export, serve, projects",
+  "main": "dist/index.js",
+  "bin": {
+    "vibemeter": "dist/index.js"
+  },
+  "scripts": {
+    "build": "node ../../build.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@vibemeter/core": "workspace:*",
+    "commander": "^12.0.0"
+  },
+  "devDependencies": {
+    "typescript": "*"
+  }
+}

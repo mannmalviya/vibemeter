@@ -1,0 +1,16 @@
+{
+  "name": "@vibemeter/hooks",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Claude Code Pre/PostToolUse hook scripts",
+  "scripts": {
+    "build": "node ../../build.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@vibemeter/core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "*"
+  }
+}

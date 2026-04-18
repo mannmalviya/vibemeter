@@ -1,0 +1,59 @@
+{
+  "name": "vibemeter-vscode",
+  "version": "0.1.0",
+  "private": true,
+  "description": "VibeMeter VS Code extension — status bar, sidebar dashboard",
+  "displayName": "VibeMeter",
+  "publisher": "vibemeter",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "vibemeter.export",
+        "title": "VibeMeter: Export Stats"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "vibemeter",
+          "title": "VibeMeter",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "vibemeter": [
+        {
+          "type": "webview",
+          "id": "vibemeter.dashboard",
+          "name": "Dashboard"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "node ../../build.js",
+    "typecheck": "tsc --noEmit",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "@vibemeter/core": "workspace:*",
+    "chokidar": "^3.6.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "recharts": "^2.13.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.0.0",
+    "typescript": "*"
+  }
+}
